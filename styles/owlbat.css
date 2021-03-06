@@ -1,0 +1,131 @@
+@font-face {
+	font-family: "AppleII";
+	src: url("./fonts/AppleII.ttf");
+}
+
+@font-face {
+	font-family: "Fix15MonoBold";
+	src: url("./fonts/Fix15Mono-Bold.woff");
+}
+
+@font-face {
+	font-family: "IBMDOS";
+	src: url("./fonts/Web437_IBM_DOS_ISO8.woff");
+}
+
+
+html {
+	padding: 0;
+	margin: 0;
+}
+.owlbat-body {
+	padding: 0;
+	margin: 0;
+	font-family: "Fix15MonoBold", "Courier", "Courier New", monospace;
+	background: #383330;
+	box-shadow: inset 0 0 10vmin rgba(0, 0, 0, 0.2);
+	text-align: center;
+}
+
+.owlbat-header {
+	padding: 1vh;
+}
+.owlbat-header h1 {
+	margin: 0;
+}
+
+.owlbat-machine-section {
+	margin: 1vh auto;
+}
+
+.owlbat-machine-scene { /* Thanks https://codepen.io/desandro/pen/KRWjzm */
+	box-sizing: border-box;
+	width: 800px;
+	height: 640px;
+	background: rgba(0, 0, 0, 0.1);
+	margin: 0 auto;
+	perspective: 1200px;
+}
+.owlbat-machine-scene * {
+	box-sizing: border-box;
+}
+
+.owlbat-machine {
+	width: 600px;
+	height: 600px;
+	position: relative;
+	transform-style: preserve-3d;
+	transform: translateZ(-300px);
+	transition: transform 1s;
+	top: 20px;
+	left: 100px;
+}
+
+.owlbat-machine.show-front  { transform: translateZ(-300px) rotateY(   0deg); }
+.owlbat-machine.show-right  { transform: translateZ(-300px) rotateY( -90deg); }
+.owlbat-machine.show-back   { transform: translateZ(-300px) rotateY(-180deg); }
+.owlbat-machine.show-left   { transform: translateZ(-300px) rotateY(  90deg); }
+.owlbat-machine.show-top    { transform: translateZ(-300px) rotateX( -90deg); }
+.owlbat-machine.show-bottom { transform: translateZ(-300px) rotateX(  90deg); }
+
+.owlbat-machine-side {
+	position: absolute;
+	width: 600px;
+	height: 600px;
+	text-align: center;
+	box-shadow: 0 2em 2em rgba(0,0,0,0.2);
+	border-radius: 10px;
+}
+
+.owlbat-machine-front  { background: #201915; border: solid 4px #b39070; border-width: 2px 10px;  }
+.owlbat-machine-right  { background: #b39070; }
+.owlbat-machine-back   { background: #a38060; }
+.owlbat-machine-left   { background: #b39070; }
+.owlbat-machine-top    { background: #c3a080; }
+.owlbat-machine-bottom { background: #836040; }
+
+.owlbat-machine-front  { transform: rotateY(  0deg) translateZ(300px); }
+.owlbat-machine-right  { transform: rotateY( 90deg) translateZ(300px); }
+.owlbat-machine-back   { transform: rotateY(180deg) translateZ(300px); }
+.owlbat-machine-left   { transform: rotateY(-90deg) translateZ(300px); }
+.owlbat-machine-top    { transform: rotateX( 90deg) translateZ(300px); }
+.owlbat-machine-bottom { transform: rotateX(-90deg) translateZ(300px); }
+
+.owlbat-machine-screen {
+	font-family: "IBMDOS", monospace; /* This seems to be necessary for the js/canvas to pick up the font */
+	background: #070707;
+	width: 528px;
+	height: 528px;
+	padding: 8px;
+	margin: 20px auto;
+	border-radius: 20px;
+	box-shadow: 0 6px 6px rgba(255, 255, 255, 0.01), 0 -6px 6px rgba(0, 0, 0, 0.1);
+}
+
+.owlbat-machine-series-label {
+	color: #b39070;
+	text-shadow: 0 1px 1px #000;
+	font-size: 11px;
+	font-family: "Arial Black", Arial, sans-serif;
+	text-align: right;
+	margin: 0 12px;
+}
+
+.owlbat-canvas {
+	width: 512px;
+	height: 512px;
+	background: #111;
+	margin: 0;
+	padding: 0;
+	box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+	/* background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 1px, rgba(0, 0, 0, 0.3) 2px, rgba(0, 0, 0, 0.3) 10px ), #382e14; */
+}
+
+/* ---- Keyboard ---- */
+
+.owlbat-keyboard-section {
+	background: rgba(0, 0, 0, 0.1);
+	padding: 1vmin;
+}

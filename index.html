@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>OWLBAT</title>
+	<meta charset="utf-8">
+	<meta name="description" content="A retro/fantasy computer system that mimics the PLATO">
+	<meta name="author" content="Luke Nickerson">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link href="./styles/owlbat.css" rel="stylesheet" />
+</head>
+<body scroll="no" class="owlbat-body">
+	<main id="main">
+		<header class="owlbat-header">
+			<h1>OWLBAT</h1>
+		</header>
+		<section class="owlbat-machine-section">
+			<div class="owlbat-machine-scene">
+				<div class="owlbat-machine">
+					<div class="owlbat-machine-side owlbat-machine-front">
+						<div class="owlbat-machine-screen">
+							<canvas class="owlbat-canvas"
+								width="512" height="512"></canvas>
+						</div>
+						<div class="owlbat-machine-series-label">
+							OWLBAT I
+						</div>
+					</div>
+					<div class="owlbat-machine-side owlbat-machine-back">back</div>
+					<div class="owlbat-machine-side owlbat-machine-right">right</div>
+					<div class="owlbat-machine-side owlbat-machine-left">left</div>
+					<div class="owlbat-machine-side owlbat-machine-top">top</div>
+					<div class="owlbat-machine-side owlbat-machine-bottom">bottom</div>
+				</div>
+			</div>
+		</section>
+		<section class="owlbat-keyboard-section">
+			[keyboard goes here]
+			<br />
+			<input type="text" class="owlbat-keyboard-input" />
+		</section>
+		<p class="radio-group">
+			<label>
+				<input type="radio" name="rotate-cube-side" value="front" checked /> front
+			</label>
+			<label>
+				<input type="radio" name="rotate-cube-side" value="right" /> right
+			</label>
+			<label>
+				<input type="radio" name="rotate-cube-side" value="back" /> back
+			</label>
+			<label>
+				<input type="radio" name="rotate-cube-side" value="left" /> left
+			</label>
+			<label>
+				<input type="radio" name="rotate-cube-side" value="top" /> top
+			</label>
+			<label>
+				<input type="radio" name="rotate-cube-side" value="bottom" /> bottom
+			</label>
+		</p>
+	</main>
+	<script type="module" src="./src/index.js"></script>
+</body>
+</html>

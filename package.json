@@ -1,0 +1,34 @@
+{
+  "name": "owlbat",
+  "version": "0.1.0",
+  "description": "Open Web Linked Browser Anachronistic Terminal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build",
+    "serve:dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rocket-boots/OWLBAT.git"
+  },
+  "keywords": [
+    "retro",
+    "PLATO",
+    "terminal",
+    "fantasy",
+    "console",
+    "fantasy",
+    "computer"
+  ],
+  "author": "Luke Nickerson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rocket-boots/OWLBAT/issues"
+  },
+  "homepage": "https://github.com/rocket-boots/OWLBAT#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "vite": "^2.0.1"
+  }
+}
