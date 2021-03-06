@@ -20,7 +20,6 @@ class Index extends Program {
 				'clear',
 				`write \n\nList of programs:${programList}`,
 				'write \n\nType program name to run.',
-				'write \n>',
 				'exit'
 			]
 		};

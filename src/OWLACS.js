@@ -70,13 +70,16 @@ class OWLACS {
 
 	static async output(server, sendObj, identity, program) {
 		if (!sendObj.commands) outputObj.commands = [];
-		if (program.name) {
-			sendObj.commands.unshift(`program ${program.name}`);
+		const programName = program.name || program;
+		if (typeof programName === 'string') {
+			sendObj.commands.unshift(`program ${programName}`);
 		}
 		// console.log('\t\tServer outputting', sendObj);
 		if (OWLACS.hasExit(sendObj)) {
 			console.log('\t\tEXITING', program.name);
-			program.removeUser(identity.userKey);
+			if (typeof program === 'object') {
+				program.removeUser(identity.userKey);
+			}
 			sendObj.commands.push(`write ${SERVER_PROMPT}`);
 		}
 		// TODO: Send to all / only the users or wires connected to terminals
@@ -89,7 +92,7 @@ class OWLACS {
 		console.log('\t\tServer input (program/cmd/data): ', programName, '/', serverCommand, '/', data);
 		const program = OWLACS.findProgram(server, programName);
 		if (!program) {
-			const response = { commands: [`write  Program ${programName} not found${SERVER_PROMPT}`] };
+			const response = { commands: [`write \nProgram ${programName} not found${SERVER_PROMPT}`] };
 			await OWLACS.output(server, response, identity, 'server');
 			return;
 		}
@@ -114,11 +117,13 @@ class OWLACS {
 				programName: data,
 				data: null,
 				serverCommand: null,
-			}
+			};
 			return await OWLACS.input(server, null, newObj);
 		}
-		// If there's no program name, just give a prompt
-		return { commands: LOGIN_RETURN_COMMANDS }; // TODO: Needed?
+		// If there's no program name, do nothing
+		const sendObj = { commands: ['write \nServer is already running.', 'exit'] };
+		OWLACS.output(server, sendObj, identity, 'server');
+		return;
 	}
 
 	static addUser(server, userKey, identity) {

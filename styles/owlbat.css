@@ -1,7 +1,7 @@
-@font-face {
+/* @font-face {
 	font-family: "AppleII";
 	src: url("./fonts/AppleII.ttf");
-}
+} */
 
 @font-face {
 	font-family: "Fix15MonoBold";
@@ -128,4 +128,13 @@ html {
 .owlbat-keyboard-section {
 	background: rgba(0, 0, 0, 0.1);
 	padding: 1vmin;
+}
+
+.owlbat-keyboard-input {
+	border: solid 1px #070707;
+	border-radius: 0.5em;
+	background: #111;
+	color: rgb(255, 144, 0);
+	font-family: "IBMDOS", "Fix15MonoBold", "Courier", "Courier New", monospace;
+	padding: 1em;
 }

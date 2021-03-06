@@ -17,8 +17,7 @@ class Who extends Program {
 		const outputObj = {
 			commands: [
 				'clear',
-				`write \n\nList of users:${userList}`,
-				'write \n>',
+				`write \nWho is online?\n\nList of users:${userList}\n`,
 				'exit'
 			]
 		};

@@ -293,7 +293,10 @@ class OWLBAT {
 		// 	return;
 		// }
 		if (typeof startProgramName === 'string') {
-			OWLBAT.startProgram(bat, startProgramName);
+			window.setTimeout(() => {
+				bat.write(startProgramName);
+				OWLBAT.startProgram(bat, startProgramName);
+			}, 1000);
 		}
 	}
 
@@ -302,7 +305,7 @@ class OWLBAT {
 			console.warn('Cannot start program without a name');
 			return;
 		}
-		bat.output(programName, null);
+		bat.output('run', programName);
 	}
 
 	async input(from, response) {
