@@ -4,7 +4,7 @@
 import OWLACS from "./OWLACS";
 import OWLBAT from "./OWLBAT.js";
 
-const WIRE_TIME = 200; // simulates slow communication
+const WIRE_TIME = 10; // simulates slow communication
 
 // Communications between OWLBAT client and server
 class Wire {

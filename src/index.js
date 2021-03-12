@@ -31,7 +31,9 @@ server.start();
 // Setup and start terminal
 
 const owlbat = new OWLBAT();
-owlbat.setup({ start: 'hello' });
+owlbat.setup({
+	start: 'mc'
+});
 
 // Connect the two...
 const wire = new Wire(owlbat, server); // mutates terminal and server

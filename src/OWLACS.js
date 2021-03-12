@@ -10,7 +10,7 @@ const LOGIN_RETURN_COMMANDS = [
 	`write ${SERVER_PROMPT}`,
 ];
 const EXIT_COMMAND = 'exit';
-const RUN_TIME = 600;
+const RUN_TIME = 200; // Should at least be greater than twice the wire delay
 const g = window; // Global
 
 class OWLACS {
@@ -81,6 +81,7 @@ class OWLACS {
 				program.removeUser(identity.userKey);
 			}
 			sendObj.commands.push(`write ${SERVER_PROMPT}`);
+			sendObj.commands.push('input text');
 		}
 		// TODO: Send to all / only the users or wires connected to terminals
 		const response = await server.wire.send(server, null, sendObj);
@@ -89,7 +90,7 @@ class OWLACS {
 
 	static async input(server, from, obj) {
 		const { programName, identity, serverCommand, data } = obj;
-		console.log('\t\tServer input (program/cmd/data): ', programName, '/', serverCommand, '/', data);
+		// console.log('\t\tServer input (program/cmd/data): ', programName, '/', serverCommand, '/', data);
 		const program = OWLACS.findProgram(server, programName);
 		if (!program) {
 			const response = { commands: [`write \nProgram ${programName} not found${SERVER_PROMPT}`] };
@@ -140,7 +141,7 @@ class OWLACS {
 	}
 
 	async input(from, obj) {
-		console.log('\t\tServer received from wire', obj);
+		// console.log('\t\tServer received from wire', obj);
 		return await OWLACS.input(this, from, obj);
 	}
 

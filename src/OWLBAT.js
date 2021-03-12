@@ -1,22 +1,20 @@
-const ORANGE = 'rgb(255,144,0)';
-// 'rgb(255,144,0)' -- from Cyber1.org's pterm
-// '#FE9300' -- from https://cdn.escapistmagazine.com/media/global/images/library/deriv/801/801121.png
-// '#FE864D' -- from http://www.platohistory.org/blog/2010/04/the-terminals-are-coming.html
-const FONT_FACE = 'IBMDOS';
+import TerminalDisplay from './TerminalDisplay.js';
 
 // Modes
-const TTY_MODE = 'TTY';
+const TTY_MODE = 'TTY'; // "Resident modes": TTY or graphics
+
 const OWLBAT_MODE = 'OWLBAT';
 const OFFLINE_MODE = 'OFFLINE';
 const INPUT_KEYPRESS = 'key';
 const INPUT_TEXT = 'text';
-const SCREEN_X = 512;
-const SCREEN_Y = 512;
+
+// Should fit 64 characters (8px wide) across a row, and 32 rows of characters
+const FONT_FACE = 'IBMDOS';
 const CHAR_X = 8;
 const CHAR_Y = 16;
-// Should fit 64 characters (8px wide) across a row, and 32 rows of characters
-const CHAR_COL_MAX = SCREEN_X / CHAR_X;
-const CHAR_ROW_MAX = SCREEN_Y / CHAR_Y;
+const CHAR_COL_MAX = TerminalDisplay.SCREEN_X / CHAR_X;
+const CHAR_ROW_MAX = TerminalDisplay.SCREEN_Y / CHAR_Y;
+
 const SERVER_PROGRAM = 'server';
 const LOGIN_SERVER_COMMAND = 'login'; // TODO: move to Wire?
 
@@ -26,6 +24,7 @@ class OWLBAT {
 		this.ctx = null;
 		this.wire = null; // Connection to server
 		this.mode = TTY_MODE; // TODO
+		this.screenMode = TerminalDisplay.SCREEN_MODE_WRITE;
 		this.inputMode = INPUT_TEXT;
 		this.identity = {
 			userName: 'tron',
@@ -38,8 +37,9 @@ class OWLBAT {
 		this.col = 0;
 		// TODO: Allow toggle between single-character input and string input (submit with enter)
 
+		// TODO: Add throttle to key presses?
 		this.keyPressListener = (e) => {
-			console.log(this.inputMode, e.key, e.keyCode);
+			// console.log(this.inputMode, e.key, e.keyCode);
 			if (this.inputMode === INPUT_KEYPRESS) {
 				OWLBAT.write(this, e.key);
 				this.output('key', e.key);
@@ -54,59 +54,107 @@ class OWLBAT {
 				}
 			}
 		};
+		this.mouseMoveThrottleTimerId = null;
+		this.mouseMoveListener = (e) => {
+			if (this.mouseMoveThrottleTimerId) return;
+			this.mouseMoveThrottleTimerId = window.setTimeout(() => {
+				const sceneDims = this.getSceneDimensions();
+				this.mouseMoveThrottleTimerId = null;
+				const { pageX, pageY } = e;
+				const isAbove = (pageY < sceneDims.top);
+				const isBelow = (pageY > sceneDims.bottom);
+				const degX = (isAbove) ? (sceneDims.top - pageY) / 14 : (isBelow ? (sceneDims.bottom - pageY) / 14 : 0);
+				const degY = (isAbove || isBelow) ? (pageX - sceneDims.middleX) / 10 : 0;
+				const degZ = 0;
+				const translateZ = (isAbove || isBelow) ? '-600px' : undefined;
+				// console.log(pageX, pageY, sceneDims);
+				this.rotateMachine(degX, degY, degZ, translateZ);
+			}, 150);
+		};
+	}
+
+	rotateMachine(x = 0, y = 0 , z = 0, translateZ = 'var(--machine-neg-translate-z)') {
+		// console.log(x, y, z);
+		const transf = (
+			`translateZ(${translateZ})
+			rotateX(${x}deg)
+			rotateY(${y}deg)
+			rotateZ(${z}deg)`
+		);
+		const machineElt = window.document.getElementsByClassName('owlbat-machine')[0];
+		machineElt.style.transform = transf;
 	}
 
 	static run(bat, commands = []) {
 		commands.forEach((fullCommand) => {
-			const commandArr = fullCommand.split(' ');
-			const command = commandArr.shift();
-			const commandRemainder = commandArr.join(' ');
-			// console.log('Running command', command);
-			switch(command) {
-				case 'program': {
-					bat.setProgramName(commandArr.shift());
-					break;
-				}
-				case 'clear': {
-					OWLBAT.clear(bat);
-					break;
-				}
-				case 'write': {
-					OWLBAT.write(bat, commandRemainder);
-					break;
-				}
-				case 'exit': {
-					bat.setProgramName(SERVER_PROGRAM);
-					break;
-				}
-				case 'input': { // Change from input mode to single-character/keypress mode
-					bat.setInputMode(commandArr.shift());
-					break;
-				}
-				case 'draw': {
-					// TODO: Allow PLATO-style course semi-colon-separated coordinates
-					bat.draw(commandArr);
-					break;
-				}
-				case 'circle': {
-					bat.circle(commandArr);
-					break;
-				}
-				case 'at': {
-					// TODO: Allow PLATO-style single-digit coordinates
-					const { x, y } = OWLBAT.getCoordinatesFromArray(commandArr);
-					OWLBAT.resetText(bat, x, y);
-				}
-			}
-			// TODO: Commands like...
-			// Mode: write or erase (pixel on/off -- erase mode: write into dark color and let screen corrector remove the pixels)
-			// Display text
-			// Display lines
-			// Display points
-			// Display blocks
-			// Display character sets
-			// Display raw data (pixels?)
+			OWLBAT.runCommand(bat, fullCommand);
 		});
+		TerminalDisplay.filter(bat.ctx);
+	}
+
+	filter() {
+		TerminalDisplay.filter(this.ctx);
+	}
+
+	static runCommand(bat, fullCommand) {
+		const commandArr = fullCommand.split(' ');
+		const command = commandArr.shift();
+		const commandRemainder = commandArr.join(' ');
+		// console.log('Running command', command);
+		switch(command) {
+			case 'program': {
+				bat.setProgramName(commandArr.shift());
+				break;
+			}
+			case 'clear': {
+				OWLBAT.clear(bat);
+				break;
+			}
+			case 'write': {
+				OWLBAT.write(bat, commandRemainder);
+				break;
+			}
+			case 'exit': {
+				bat.setProgramName(SERVER_PROGRAM);
+				break;
+			}
+			case 'input': { // Change from input mode to single-character/keypress mode
+				bat.setInputMode(commandArr.shift());
+				break;
+			}
+			case 'draw': {
+				// TODO: Allow PLATO-style course semi-colon-separated coordinates
+				TerminalDisplay.draw(bat.ctx, commandArr, bat.screenMode);
+				break;
+			}
+			case 'block': {
+				TerminalDisplay.drawBlock(bat.ctx, commandArr, bat.screenMode);
+				break;
+			}
+			case 'circle': {
+				TerminalDisplay.circle(bat.ctx, commandArr, bat.screenMode);
+				break;
+			}
+			case 'at': {
+				// TODO: Allow PLATO-style single-digit coordinates
+				const { x, y } = TerminalDisplay.getCoordinatesFromArray(commandArr);
+				OWLBAT.resetText(bat, x, y);
+				break;
+			}
+			case 'mode': {
+				bat.setMode(commandArr);
+				break;
+			}
+		}
+		// TODO: Commands like...
+		// Mode: write or erase (pixel on/off -- erase mode: write into dark color and let screen corrector remove the pixels)
+		// Display text
+		// Display lines
+		// Display points
+		// Display blocks
+		// Display character sets
+		// Display raw data (pixels?)
+
 	}
 
 	setProgramName(name) {
@@ -115,12 +163,39 @@ class OWLBAT {
 		return true;
 	}
 
+	setMode(modes = []) {
+		modes.forEach((m) => {
+			const mode = m.toLowerCase();
+			if (TerminalDisplay.SCREEN_MODES.has(mode)) {
+				this.screenMode = mode;
+			}
+			// TODO: Other types of modes?
+		});
+	}
+
 	setInputMode(mode) {
 		if (!mode || typeof mode !== 'string') return false;
 		const lowerMode = mode.toLowerCase();
 		if (mode !== INPUT_KEYPRESS && mode !== INPUT_TEXT) return false;
 		this.inputMode = mode;
 		return true;
+	}
+
+	switchMode(newMode) {
+		this.mode = newMode;
+		// TODO: Kill any sends in flight
+		// TODO: Do something in offline mode
+	}
+
+	switchPower(force) {
+		this.power = (typeof force === 'boolean') ? force : !this.power;
+		const machineElt = window.document.querySelector('.owlbat-machine');
+		if (!this.power) {
+			OWLBAT.clear(this);
+			machineElt.classList.remove('owlbat-machine--on');
+		} else {
+			machineElt.classList.add('owlbat-machine--on');
+		}
 	}
 
 	static clear(bat) {
@@ -178,9 +253,41 @@ class OWLBAT {
 		OWLBAT.write(this, text);
 	}
 
+	async input(from, response) {
+		if (!this.power) return;
+		// console.log('Terminal received input', response);
+		if (
+			response.userKey
+			// TODO: Make it so only the server can provide the userKey
+			// && this.programName === 'server' && what === LOGIN_SERVER_COMMAND
+		) {
+			this.identity.userKey = response.userKey;
+		}
+		if (response && response.commands) {
+			OWLBAT.run(this, response.commands);
+		}
+	}
+
+	async output(serverCommand, data) {
+		if (!this.power) return;
+		// TODO: Try /catch and display an offline notice if fails
+		const sendObj = {
+			programName: this.programName,
+			identity: this.identity,
+			serverCommand,
+			data,
+		};
+		const response = await this.wire.send(this, null, sendObj);
+		// console.log('Output returned', response);
+		// if (this.programName === 'server' && what === LOGIN_SERVER_COMMAND) {
+		// 	this.identity.userKey = response.userKey;
+		// }
+		// OWLBAT.input(this, response);
+	}
+
 	splash() {
 		const { ctx } = this;
-		this.draw([
+		TerminalDisplay.draw(ctx, [
 			// 0, 0,
 			// 0, 512,
 			// 512, 512,
@@ -192,94 +299,18 @@ class OWLBAT {
 			// 500, 500,
 			// 500, 12,
 			// 12, 12,
-		]);
-		// this.circle([300, 256, 256]);
-		// this.circle([200, 256, 256]);
-		// this.circle([100, 256, 256]);
+		], this.screenMode);
+		// TerminalDisplay.circle(ctx, [300, 256, 256], this.screenMode);
+		// TerminalDisplay.circle(ctx, [200, 256, 256]);
+		// TerminalDisplay.circle(ctx, [100, 256, 256]);
 		const corner = 100;
 		const size = 512 - (corner * 2);
-		this.drawRectangle(corner, corner, size, size);
+		TerminalDisplay.drawRectangle(ctx, corner, corner, size, size, this.screenMode);
 
 		ctx.font = `40px ${FONT_FACE}`;
 		ctx.fillText('OWLBAT', 195, 265);
 		ctx.font = `20px ${FONT_FACE}`;
 		this.writeAt('Booting...', 24, 27);
-	}
-
-	static getCoordinatesFromArray(arr = [], i = 0) {
-		return { x: Number(arr[i]), y: Number(arr[i + 1]) };
-	}
-
-	contextBeginPath() {
-		const { ctx } = this;
-		ctx.beginPath();
-		ctx.strokeStyle = ORANGE;
-		ctx.lineWidth = 1;
-		return ctx;
-	}
-
-	draw(arr = []) { // lines
-		if (arr.length <= 2) {
-			this.drawPixel(arr);
-			return;
-		};
-		const ctx = this.contextBeginPath();
-		let moveNext = true;
-		for(let i = 0; i < arr.length; i++) {
-			if (arr[i] === 'skip') {
-				moveNext = true;
-				i++;
-			}
-			const { x, y } = OWLBAT.getCoordinatesFromArray(arr, i);
-			if (isNaN(x) || isNaN(y)) {
-				console.warn('x or y not a number', i, arr[i], arr[i + 1]);
-			} else {
-				if (moveNext) {
-					ctx.moveTo(x, y);
-					moveNext = false;
-				} else {
-					ctx.lineTo(x, y);
-				}
-			}
-			i++;
-		}
-		ctx.stroke();
-	}
-
-	drawRectangle(x, y, sizeX, sizeY, fill = false) {
-		const ctx = this.contextBeginPath();
-		const method = (fill) ? 'fillRect' : 'strokeRect';
-		ctx[method](x, y, sizeX, sizeY);
-	}
-
-	drawPixel(arr = []) {
-		if (arr.length < 2) return;
-		const { x, y } = OWLBAT.getCoordinatesFromArray(arr);
-		if (isNaN(x) || isNaN(y)) {
-			console.warn('x or y not a number', arr);
-			return;
-		}
-		const { ctx } = this;
-		ctx.fillRect(x, y, 1, 1);
-	}
-
-	circle(arr = []) {
-		if (arr.length < 3) return;
-		const r = arr[0];
-		const { x, y } = OWLBAT.getCoordinatesFromArray(arr.slice(1));
-		if (isNaN(r) || isNaN(x) || isNaN(y)) {
-			console.warn('x or y or r is not a number', arr, x, y, r);
-			return;
-		}
-		const ctx = this.contextBeginPath();
-		ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-		ctx.stroke();
-	}
-
-	switchMode(newMode) {
-		this.mode = newMode;
-		// TODO: Kill any sends in flight
-		// TODO: Do something in offline mode
 	}
 
 	static async start(bat, startProgramName) {
@@ -296,7 +327,7 @@ class OWLBAT {
 			window.setTimeout(() => {
 				bat.write(startProgramName);
 				OWLBAT.startProgram(bat, startProgramName);
-			}, 1000);
+			}, 200); // Should be greater than twice the wire delay
 		}
 	}
 
@@ -308,36 +339,6 @@ class OWLBAT {
 		bat.output('run', programName);
 	}
 
-	async input(from, response) {
-		// console.log('Terminal received input', response);
-		if (
-			response.userKey
-			// TODO: Make it so only the server can provide the userKey
-			// && this.programName === 'server' && what === LOGIN_SERVER_COMMAND
-		) {
-			this.identity.userKey = response.userKey;
-		}
-		if (response && response.commands) {
-			OWLBAT.run(this, response.commands);
-		}
-	}
-
-	async output(serverCommand, data) {
-		// TODO: Try /catch and display an offline notice if fails
-		const sendObj = {
-			programName: this.programName,
-			identity: this.identity,
-			serverCommand,
-			data,
-		};
-		const response = await this.wire.send(this, null, sendObj);
-		// console.log('Output returned', response);
-		// if (this.programName === 'server' && what === LOGIN_SERVER_COMMAND) {
-		// 	this.identity.userKey = response.userKey;
-		// }
-		// OWLBAT.input(this, response);
-	}
-
 	static setupCanvas(bat) {
 		bat.canvas = document.querySelector('.owlbat-canvas');
 		if (!bat.canvas) {
@@ -345,7 +346,7 @@ class OWLBAT {
 			return;
 		}
 		bat.ctx = bat.canvas.getContext('2d');
-		bat.ctx.fillStyle = ORANGE;
+		TerminalDisplay.setupContext(bat.ctx, bat.screenMode);
 	}
 
 	static setupKeyboard(bat) {
@@ -375,11 +376,41 @@ class OWLBAT {
 		OWLBAT.getKeyboardInputElement().value = '';
 	}
 
+	getSceneDimensions() {
+		const sceneElement = window.document.querySelector('.owlbat-machine-scene');
+		const rect = sceneElement.getBoundingClientRect();
+		return {
+			top: rect.top + window.scrollX,
+			bottom: rect.bottom + window.scrollY,
+			middleX: rect.left + (rect.right - rect.left) / 2,
+		};
+	}
+
+	setupMachineRotation() {
+		// const sceneElement = window.document.querySelector('.owlbat-machine-scene');
+		// const rect = sceneElement.getBoundingClientRect();
+		// sceneDims.top = rect.top;
+		// sceneDims.bottom = rect.bottom;
+		// sceneDims.middleX = rect.left + (rect.right - rect.left) / 2;
+		window.document.addEventListener('mousemove', this.mouseMoveListener);
+	}
+
+	setupButtons() {
+		const panel = window.document.querySelector('.owlbat-machine-switch-panel')
+		panel.addEventListener('click', (e) => {
+			if (e.target.closest('.owlbat-machine-power-toggle')) {
+				this.switchPower();
+			}
+		});
+	}
+
 	setup(options = {}) {
 		this.defaultServer = options.server;
 		window.document.addEventListener('DOMContentLoaded', () => {
 			OWLBAT.setupCanvas(this);
 			OWLBAT.setupKeyboard(this);
+			this.setupButtons();
+			this.setupMachineRotation();
 
 			// From https://codepen.io/desandro/pen/KRWjzm
 			// TODO: Refactor
@@ -404,6 +435,7 @@ class OWLBAT {
 			// Start?
 			this.splash();
 			if (options.start) {
+				this.switchPower(true);
 				OWLBAT.start(this, options.start);
 			}
 		});

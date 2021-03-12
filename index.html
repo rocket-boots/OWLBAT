@@ -11,8 +11,55 @@
 <body scroll="no" class="owlbat-body">
 	<main id="main">
 		<header class="owlbat-header">
-			<h1>OWLBAT</h1>
+			<h1>Min-Craft OWLBAT Edition</h1>
 		</header>
+		<section class="introduction">
+			<h1>PLATO &amp; OWLBAT</h1>
+			<p>
+				Before the internet, before personal computers, before Pac-Man, before Atari...
+				there was the PLATO system.
+			</p>
+			<p>
+				<a href="https://en.wikipedia.org/wiki/PLATO_(computer_system)#/media/File:Platovterm1981.jpg" target="learn">
+					<img src="./images/plato-v.png" class="plato-image" />
+				</a>
+				The 
+				<a href="https://en.wikipedia.org/wiki/PLATO_(computer_system)" target="learn">
+					Programmed Logic for Automatic Teaching Operations</a>
+				system was a state-of-the-art
+				terminal system created in the 1960s, that gained popularity in the 1970s.
+				It featured a 512 x 512 monochromatic plasma display, touchscreen sensor,
+				<a href="https://www.google.com/search?q=plato+computer+system+keyboard&source=lnms&tbm=isch"
+					target="learn">keyboard</a>,
+				and was networked via a mainframe.
+				Although primarily intended for education, it was
+				nonetheless the birthplace of some of the first computer games ever - including the
+				first CRPG
+				<a href="https://en.wikipedia.org/wiki/Dnd_(PLATO_video_game)" target="learn">"dnd"</a>,
+				and the first multiplayer games.
+			</p>
+			<p>
+				The OWLBAT (Open Web Linked Browser-based Anachronistic Terminal) is a retro 
+				"fantasy console" (in the vein of 
+				<a href="https://www.lexaloffle.com/pico-8.php" target="learn">PICO-8</a>)
+				that attempts to recreate the PLATO system experience (circa PLATO IV-V)
+				in a web browser.
+				Keyboard input is sent to a "sever", which responds with a list of basic commands
+				(inspired by PLATO's
+				<a href="https://en.wikipedia.org/wiki/TUTOR" target="learn">TUTOR</a> language and the
+				<a href="https://irata.online/assets/s0ascers-045c83081e9ada2008378c3ae6aa62564b213a71decf9fe04608909b91d20ad1.html#C1" target="learn">
+					PLATO specs</a>) which determine what gets displayed on the terminal screen.
+			</p>
+		</section>
+		<section class="introduction">
+			<h1>Min-Craft 1975</h1>
+			<p>
+				Min-craft is inspired by Notch's
+				<a href="http://ludumdare.com/compo/ludum-dare-22/?action=preview&uid=398" target="learn">Minicraft (Ludum Dare 22)</a>
+				and is an answer to the question:
+				"What if Minecraft had been envisioned in 1975?"
+			</p>
+		</section>
 		<section class="owlbat-machine-section">
 			<div class="owlbat-machine-scene">
 				<div class="owlbat-machine">
@@ -24,12 +71,22 @@
 						<div class="owlbat-machine-series-label">
 							OWLBAT I
 						</div>
+						<div class="owlbat-machine-switch-panel">
+							<div>
+								<span class="owlbat-machine-switch-label">Power</span>
+								<button type="button" title="Power On/Off Switch"
+									class="owlbat-machine-switch-button owlbat-machine-power-toggle"></button>
+							</div>
+							<div>
+								<!-- <span class="owlbat-machine-switch-label">Sound</span> -->
+							</div>
+						</div>
 					</div>
-					<div class="owlbat-machine-side owlbat-machine-back">back</div>
-					<div class="owlbat-machine-side owlbat-machine-right">right</div>
-					<div class="owlbat-machine-side owlbat-machine-left">left</div>
-					<div class="owlbat-machine-side owlbat-machine-top">top</div>
-					<div class="owlbat-machine-side owlbat-machine-bottom">bottom</div>
+					<div class="owlbat-machine-side owlbat-machine-back"></div>
+					<div class="owlbat-machine-side owlbat-machine-right"></div>
+					<div class="owlbat-machine-side owlbat-machine-left"></div>
+					<div class="owlbat-machine-side owlbat-machine-top"></div>
+					<div class="owlbat-machine-side owlbat-machine-bottom"></div>
 				</div>
 			</div>
 		</section>
@@ -57,6 +114,37 @@
 				<input type="radio" name="rotate-cube-side" value="bottom" /> bottom
 			</label>
 		</div>
+		<section class="instructions">
+			<h1>Instructions</h1>
+			<p>Click the screen to allow keyboard input</p>
+			<p>
+				<kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd>, <kbd>D</kbd> for movement
+			</p>
+			<p><kbd>Z</kbd> or <kbd>I</kbd> for inventory</p>
+			<p><kbd>C</kbd> for crafting</p>
+			<p><kbd>E</kbd> or <kbd>Space</kbd> for actions in the world (chop, mine, build)</p>
+			<p><kbd>E</kbd> or <kbd>Space</kbd> for menu selections</p>
+			<p><kbd>1</kbd>-<kbd>4</kbd> to equip top items</p>
+			<p><kbd>T</kbd> to toss your equipped item on the ground</p>
+			<p><kbd>`</kbd> (backtick) to exit</p>
+			<p>Note: Your game is not saved when your browser leaves the page.</p>
+		</section>
+		<section class="credits">
+			<p>
+				Thanks to <a href="int10h.org" target="learn">cyber1.org</a> for providing a
+				PLATO terminal experience, 
+				<a href="https://int10h.org/oldschool-pc-fonts/fontlist/?2" target="learn">int10h.org</a>
+				for the font, and
+				<a href="https://playminicraft.com/" target="learn">playminicraft.com</a>
+				for keeping Minicraft alive.
+			</p>
+			<p>
+				Interested in making a PLATO-themed game with OWLBAT?
+				<a href="https://github.com/rocket-boots/OWLBAT" target="code">Check out the GitHub repo</a>
+				(fork it, add an issue, etc.), or
+				<a href="https://twitter.com/deathraygames" target="contact">contact me on Twitter</a>.
+			</p>
+		</section>
 	</main>
 	<script type="module" src="./src/index.js"></script>
 </body>
