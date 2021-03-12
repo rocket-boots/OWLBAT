@@ -1,8 +1,8 @@
 // Wire - Web Interface for Rapid Exchange
 // formerly HOP "Hyper-Owlbat Protocol"
 
-import OWLACS from "./OWLACS";
-import OWLBAT from "./OWLBAT.js";
+// import OWLACS from "./OWLACS.js";
+// import OWLBAT from "./OWLBAT.js";
 
 const WIRE_TIME = 10; // simulates slow communication
 
