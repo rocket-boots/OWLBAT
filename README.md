@@ -11,3 +11,12 @@ The [Programmed Logic for Automatic Teaching Operations](https://en.wikipedia.or
 The OWLBAT (Open Web Linked Browser-based Anachronistic Terminal) is a retro "fantasy console" (in the vein of [PICO-8](https://www.lexaloffle.com/pico-8.php)) that attempts to recreate the PLATO system experience (circa PLATO IV-V) in a web browser. Keyboard input is sent to a "sever", which responds with a list of basic commands (inspired by PLATO's [TUTOR](https://en.wikipedia.org/wiki/TUTOR) language and the [PLATO specs](https://irata.online/assets/s0ascers-045c83081e9ada2008378c3ae6aa62564b213a71decf9fe04608909b91d20ad1.html#C1)) which determine what gets displayed on the terminal screen.
 
 Thanks to [cyber1.org](https://v6p9d9t4.ssl.hwcdn.net/html/3485244/int10h.org) for providing a PLATO terminal experience, and [int10h.org](https://int10h.org/oldschool-pc-fonts/fontlist/?2) for the font.
+
+## The OWLBAT Future
+
+It would be great to expand OWLBAT to accomplish a few different goals:
+
+- Showcase the PLATO functionality as an interactive historical novelty
+   - Play actual PLATO programs in the browser?
+- Provide a platform for making retro - especially terminal-based - games
+- Allow multiplayer functionality in the browser
